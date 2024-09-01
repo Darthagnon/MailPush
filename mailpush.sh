@@ -66,7 +66,7 @@ TIMER=$TIMEOUT
 while [ -f runningflag ]; do
     TIMER=$(($TIMER-1))
 	if [ 0 -eq $TIMER ]; then
-		logger "Not completed after ${TIMEOUT} seconds, aborting."
+		logger "No internet connection after ${TIMEOUT} seconds, aborting."
 		break
 	fi
 	sleep 1

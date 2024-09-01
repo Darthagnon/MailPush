@@ -1,61 +1,85 @@
 # MailPush
-For English users, there is a nice [post](https://www.reddit.com/r/kindle/comments/uvp41l/howto_email_kfx_books_from_calibre_to_a/).  
-для русскоязычных пользователей здесь есть [fork](https://github.com/DarkAssassinUA/MailPushRU).  
 
-这是个Kindle的`KUAL`插件，实现了邮箱推送功能，类似于亚马逊的`Send-to-Kindle`，但是并不依赖于在亚马逊官方注册的Kindle邮箱，可以使用任何邮箱。在使用本插件前请确保你已经把设备越狱而且安装了[`KUAL`和`Python3`](https://www.mobileread.com/forums/showthread.php?t=225030)。当然，由于本插件主体基于`Python3`的标准库完成，因此`src`文件夹里的程序实际上是跨平台的，可以运行于任何安装了`Python3`的操作系统和平台。
-## 特点
-* 支持通过邮件附件推送文件
-* 支持通过在邮件里填写文件下载链接推送文件。这有时更方便而且可以突破邮箱的文件大小的限制
-* 支持以压缩包的方式推送，插件会自动完成解压，支持zip, tar, gztar, bztar等格式
-* 支持在邮件中指定文件要保存的路径或文件名
-* 不同于亚马逊官方服务，我们没有“已认可的发件人”或其它白名单的概念，任何邮箱都可以向你推送文件
-* 不同于亚马逊官方服务，我们支持推送任意格式的文件到任意目录（不限于图书），插件不会进行检测，除了压缩包解压也不会进行任何格式转换  
+This is a **KUAL** plugin for Kindle, which implements a book-by-email push function similar to Amazon's **Send-to-Kindle**, but does not rely on Amazon's `@kindle.com` email service, and can use any email. Before using this plugin, please make sure you have jailbroken your device and installed [**KUAL** and **Python3**](https://www.mobileread.com/forums/showthread.php?t=225030). As the main body of this plugin is based on the `Python3` standard library, the scripts in the `src` folder are actually cross-platform and can run on any operating system and platform where `Python3` is installed.
 
-这里可能会有一些安全隐患（例如可以通过这种方法推送固件升级的文件），所以你最好申请一个名称相对复杂的邮箱并且不要公开。另外，你可以在`config.json`文件中为`root`设置一个更严格的路径，邮件推送的文件将不允许下载到`root`目录及其子目录之外的地方。`root`默认为Kindle USB磁盘根目录（/mnt/us/），请谨慎修改。
-## 安装和配置
-1. 注册一个新邮箱账户，很多邮箱限制颇多而配置繁琐，或者垃圾邮件判定严格。建议使用outlook邮箱，可以简化后续设置
-2. 在邮箱管理页面开启`IMAP`服务。不同邮箱的方法不同，如outlook邮箱默认开启，无需进一步设置；而新注册的QQ邮箱则需要14天后才能开启；某些邮箱（例如Yahoo、Google、QQ）还需要你创建专门的应用程序密码（授权码），使用常规密码将登录失败，插件将无法正常工作
-3. `git clone`本项目或前往[发布页面](https://github.com/guo-yong-zhi/MailPush/releases)下载压缩包并解压到你电脑的任意目录下
-4. 在`MailPush/src`文件夹里找到并编辑`config.json`文件
-   * 将`user`改为刚刚申请的新邮箱
-   * 将`password`改为登录密码（也可能是IMAP授权码）。因为是明文存储，请注意安全
-   * 将`host`、`port`改为你邮箱服务商的IMAP host和port。可以参考文末的对照表
-   * 其它参数按需修改。`downloaddir`为默认下载路径；`maxage`为下载几天内的邮件；`maxnum`为一次最多下载几封邮件
-5. 通过USB把`MailPush`文件夹复制到你Kindle设备根目录下的`extensions`目录中
-## 使用方法
-1. 用其它邮箱向你填在`config.json`中的邮箱发邮件
-   * 可以选择添加任意附件
-   * 主题或正文都可以为空
-   * 主题或正文的一行可以是文件下载链接，多个链接可用空格或`|`隔开，或者分别用`<`和`>`框住，但不支持逗号或分号分隔。当然，多个链接也可以直接写到多行。
-   * 主题或正文的一行可以以`saveto`关键字开头，用于指定下载到Kindle中的路径或文件名，多个文件名用`|`隔开，或者分别用`<`和`>`框住，不可以用空格分隔。当然，多个文件名也可以直接写到多行。缺省路径通过参数`downloaddir`配置，默认是`/mnt/us/documents/downloads`。格式如：
-      > * `saveto abc.pdf` #意为第一个文件保存到 /mnt/us/documents/downloads/abc.pdf
-      > * `saveto books/` #意为第一个文件保存到 /mnt/us/documents/downloads/books/ 中，文件名不变
-      > * `saveto /mnt/us/123.epub` #意为第一个文件保存到 /mnt/us/123.epub
-      > * `saveto abc.pdf | ../def.pdf` #意为前两个文件分别保存到 /mnt/us/documents/downloads/abc.pdf 和 /mnt/us/documents/def.pdf
-2. 在Kindle上打开KUAL，在菜单中找到`MailPush`。点击`Fetch unseen mails`系列可以获取未读，或点击`Fetch the latest mails`系列可以获取最新邮件中的文件。
-## 故障排除
-1. 点击KUAL菜单按钮`View log`和`View results`可以查看运行日志和结果。也可以USB连接Kindle到电脑，查看`extensions/MailPush/`目录中的`log.txt`和`result.txt`
-2. 如果提示`Operation failed`，请先检查`log.txt`中的内容。检查`Python3`的安装状态及`config.json`中的配置（如`password`）
-3. 手动登录你填在`config.json`的邮箱，检查是否收到了邮件，必要时把发送者加入白名单。注意登录查看会使得未读邮件变已读，`Fetch unseen mails`会忽略这些邮件，可以点击`Fetch the latest mails`系列来测试
-4. 设备的时钟错误可能会导致连接失败，请在Kindle设置里为其设置正确的时间
-5. 如果屏幕上方长时间跳动`Fetching...`或提示`Time out`，则可能是网络问题
-6. 如果提示`Operation success`却找不到文件，请先依`result.txt`中的路径检查文件，如果没有任何下载则可以点击`Fetch junk mails`系列，尝试在垃圾邮件中寻找
-7. 如果文件已下载但没有出现在你的图书馆中，请确认文件位于`/mnt/us/documents`及其子目录中，确认文件类型（后缀名）是Kindle支持的格式。确认无误后可以尝试重启设备。
-## 附：常见邮箱类型和host对照表
-|邮箱类型|host|port|
-|----|----|----|
-|gmail|imap.gmail.com|993|
-|yahoo|imap.mail.yahoo.com|993|
-|outlook|imap-mail.outlook.com|993|
-|hotmail|outlook.office365.com|993|
-|qq|imap.qq.com|993|
-|126|imap.126.com|993|
-|163|imap.163.com|993|
-|yeah|imap.yeah.net|993|
-|sina|imap.sina.com|993|
-## 我的更多Kindle插件
-* [**kindle-filebrowser**](https://github.com/guo-yong-zhi/kindle-filebrowser) 网页文件管理器 
-* [**MailPush**](https://github.com/guo-yong-zhi/MailPush) 使用第三方邮箱推送文件
-* [**BlockKindleOTA**](https://github.com/guo-yong-zhi/BlockKindleOTA) 阻止Kindle升级
-* [**KOSSH**](https://github.com/guo-yong-zhi/KOSSH) WiFi连接的轻量ssh服务器
-* [**ShuffleSS**](https://github.com/guo-yong-zhi/ShuffleSS) 打乱锁屏图片顺序
+## See also
+- For English users, there is a nice [Reddit post](https://old.reddit.com/r/kindle/comments/uvp41l/howto_email_kfx_books_from_calibre_to_a/)
+- для русскоязычных пользователей здесь есть [Russian fork](https://github.com/DarkAssassinUA/MailPushRU) 
+- [Python 3.9+ for Win7](https://github.com/adang1345/PythonWin7)
+- [KOReader](https://github.com/koreader/koreader) is the best ereader software for Kindle.
+
+## Features
+- Supports sending files to Kindle via email attachments.
+- Supports sending files to Kindle via a download link in an email. This is sometimes more convenient and allows you to bypass the mailbox file size limit.
+- Supports sending files as ZIPs. The plugin will automatically decompress `zip`, `tar`, `gztar`, `bztar` and other compressed package formats.
+- Supports specifying the path or file name to save the file in the email/on the device
+- Unlike Amazon's official service, MailPush does not have the concept of "approved senders" or other whitelists. You can send files to yourself from any mailbox.
+- Unlike Amazon's official service, MailPush supports sending files of any format to any directory and is not limited to books. The plugin is filetype-agnostic and will not perform any format conversions except for decompressing ZIPs.
+
+## Disclaimer
+There may be some security risks here (for example, firmware upgrades files can be pushed via MailPush), so you should use a non-public mailbox with a relatively complex name. Alternatively, you can set a stricter path for `root` in the `config.json` file, and files sent by email will not be allowed to be downloaded outside the `root` directory and its subdirectories. `root` defaults to the Kindle USB disk root directory (`/mnt/us/`), so please modify it with caution, e.g. to `/mnt/us/ebooks/`. Do not share your MailPush inbox with anyone; the authors do not encourage piracy by distribution and are not responsible for any issues caused by using this tool. MailPush is provided as-is, without any guarantee of being fit for purpose.
+
+## Installation and configuration
+1. Register a new email account. Many email accounts have many restrictions and cumbersome configurations, or strict spam filters. It is recommended to use an Outlook email account, which can simplify subsequent settings. Do not use a password shared with any other account, as MailPush stores it in plaintext!
+2. Enable `IMAP` in the email mailbox settings. The exact setting will vary between email providers. For example, IMAP is enabled by default on Outlook email accounts and no further settings are required, whereas with a newly registered QQ email account you must wait 14 days before you can enable IMAP. Some email accounts (such as Yahoo, Google, QQ, Mail.ru) also require you to generate a special "app-specific password" (authorization code) to log in with 3rd-party email clients like MailPush. Using a regular password will fail to log in and the plugin will not work properly. Some email accounts may also have geographic or language barriers due to national firewalls.
+3. `git clone` this project or go to the [Releases page](../MailPush/releases) to download the compressed package and unzip it to any directory on your computer.
+4. In the unzipped `MailPush/src` folder, find and edit the `config.json` file.
+	- Change `user` to the new email account you just registered, e.g. `joe.bloggs.kindle1234@gmail.com`
+	- Change `password` to the login password (or "app-specific password" or IMAP authorization code). Again, because it is stored in plaintext, do not use a password common to any other account!
+	- Change `host` and `port` to the IMAP host and port of your email service provider. Please refer to the comparison table at the end of the article, or your provider's documentation.
+	- Modify other parameters as needed. `downloaddir` is the default download path (recommended `/mnt/us/ebooks/downloads` if using KUAL and KOReader); `maxage` is the age of an email in days, after which it will not be downloaded; `maxnum` is the maximum number of emails to download at a time.
+5. Copy the `MailPush` folder to the `/extensions` directory in the root directory of your Kindle device via USB.
+6. Safely eject your Kindle. MailPush will now be available in your KUAL menu.
+
+## How to use
+1. Use another email address to send an email to the email address you filled in `config.json`
+	- You can choose to add any attachment (e.g. ebooks, photos)
+	- Both the subject and the body can be empty
+	- A line in the subject or body can be a file download link, or multiple: 
+	- Multiple links are separated by spaces, line-breaks (1 link per line), or pipes `|`, or enclosed by inequalities `<` and `>` respectively. Commas `,` and semicolons `;` are not supported. 
+	- A line in the subject or body can start with the `saveto` keyword to specify the path or file name downloaded to Kindle. Multiple file names are separated by line-breaks (1 file name per line), pipes `|`, or enclosed by inequalities `<` and `>` respectively. Multiple file names cannot be separated by spaces, commas `,` or semicolons `;`. The default path is configured by the parameter `downloaddir` in `config.json`, which defaults to `/mnt/us/documents/downloads`. The format is as follows:
+		> - `saveto abc.pdf`              # means the first file is saved to /mnt/us/documents/downloads/abc.pdf
+		> - `saveto books/`               # means the first file is saved to /mnt/us/documents/downloads/books/, the file name remains unchanged
+		> - `saveto /mnt/us/123.epub`     # means the first file is saved to /mnt/us/123.epub
+		> - `saveto abc.pdf | ../def.pdf` # means the first two files are saved to /mnt/us/documents/downloads/abc.pdf and /mnt/us/documents/def.pdf respectively
+2. Open KUAL on your Kindle and find `MailPush` in the menu. Make sure you are connected to Wifi. Use an update blocker plugin, e.g. **BlockKindleOTA**, alonside MailPush to avoid accidentally updating and losing your jailbreak while on Wifi. Click the `Fetch unread emails` button to download all unread emails, or click the `Fetch all emails` button to get the files in the latest mail. Other email download modes are also provided.
+3. After selecting a download mode, wait a little. The books will download.
+
+## Troubleshooting
+1. Click the KUAL >> MailPush menu buttons `View log` and `View results` to view the operation log and results. You can also connect your Kindle to the computer via USB and view `log.txt` and `result.txt` in the `extensions/MailPush/` directory.
+2. If MailPush prompts `Operation failed`, please check the content in `log.txt` first. Check the installation status of `Python3` and the configuration in `config.json` (such as `password`)
+3. Manually log in to the email address you filled in `config.json`, check whether the email has been received, and add the sender to the whitelist if necessary. Note that logging in to view will turn unread emails into read emails. `Fetch unread mails` will now ignore these emails; you can click the `Fetch all emails` button to attempt redownloading.
+4. If the device clock is wrong it may cause the connection to fail. Please set the correct time in the Kindle settings.
+5. If the plugin hangs on `Fetching...` at the top of the screen or prompts `Time out`, there may be a network problem. Make sure you have an internet connection, try again later or use another email provider.
+6. If it prompts `Operation success` but the file cannot be found, please check the file according to the path in `result.txt` first. If there is no download, you can click the `Fetch junk emails` button and try to find it in spam.
+7. If the file has been downloaded but does not appear in your library, please confirm that the file is located in `/mnt/us/documents` and its subdirectories, and confirm that the file type (suffix name) is a format supported by the Kindle. After confirmation, you can try to restart the device. If you're primarily using KUAL and KOReader, you may wish to download books by default to `/mnt/us/ebooks/downloads` or another directory that is not read by the main Kindle software. This will keep KUAL easy to find.
+
+## Appendix: Common mailbox types and host comparison table
+MailPush is not limited to just the below email providers; any email provider with IMAP support should work.
+
+|**Email provider**|**Host**|**Port**|**Region**|
+|----|----|----|----|
+|gmail|imap.gmail.com|993|en-us|
+|yahoo|imap.mail.yahoo.com|993|en-us|
+|outlook|imap-mail.outlook.com|993|en-us|
+|hotmail|outlook.office365.com|993|en-us|
+|qq|imap.qq.com|993|cn-zh|
+|126|imap.126.com|993|cn-zh|
+|163|imap.163.com|993|cn-zh|
+|yeah|imap.yeah.net|993|cn-zh|
+|sina|imap.sina.com|993|cn-zh|
+|mailru|imap.mail.ru|993|ru|
+|rambler|imap.rambler.ru|993|ru|
+|yandex|imap.yandex.ru|993|ru|
+
+## Credits
+- guo-yong-zhi (original author): https://github.com/guo-yong-zhi/MailPush 
+- Dark_AssassinUA (4PDA.TO), Russian email support & translation: https://github.com/DarkAssassinUA/MailPushRU, https://bit.ly/dark_kindle
+- Darthagnon, English translation improvements: https://github.com/Darthagnon/MailPush
+
+## More of guo-yong-zhi's Kindle plugins
+* [**kindle-filebrowser**](https://github.com/guo-yong-zhi/kindle-filebrowser), web file manager
+* [**MailPush**](https://github.com/guo-yong-zhi/MailPush), use a third-party email address to push files
+* [**BlockKindleOTA**](https://github.com/guo-yong-zhi/BlockKindleOTA), block Kindle from upgrading
+* [**KOSSH**](https://github.com/guo-yong-zhi/KOSSH), lightweight SSH server for WiFi connection
+* [**ShuffleSS**](https://github.com/guo-yong-zhi/ShuffleSS), shuffle the lock screen pictures

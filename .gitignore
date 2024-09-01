@@ -3,4 +3,9 @@ download*
 .vscode
 __pycache__
 *.ipynb
-src/config.json
+*.bak
+Thumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+.DS_Store

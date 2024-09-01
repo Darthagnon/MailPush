@@ -2,8 +2,10 @@
 <extension>
 	<information>
 		<name>MailPush</name>
-		<version>1.5</version>
+		<version>1.6</version>
 		<author>guoyongzhi</author>
+		<author>Dark_AssassinUA</author>
+		<author>Darthagnon</author>
 		<id>MailPush</id>
 	</information>
 	<menus>
